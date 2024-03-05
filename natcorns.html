@@ -1,0 +1,430 @@
+<div style="position: relative; width: 100%; height:100%" id="natcornviewer"></div>
+<input id="blk" type="number" style="display: none" />
+
+<script id="preview" mint="MINT_INSCRIPTION_ID">
+
+  // Retrieve render area
+  const root = document.getElementById('natcornviewer')
+  root.parentElement.style.width = '100%'
+  root.parentElement.style.height = '100%'
+  root.parentElement.style.padding = '0px'
+  root.parentElement.style.margin = '0px'
+
+  let blockNumber = '0'
+
+  // Define the corn map with the given inscriptions
+  const cornMap = {
+    1: '/content/ed64d01ac950ede1c0d4c3b12600576972dad527dfc4b9f34c01e6437ca8a393i0', // blush pink
+    2: '/content/9e5ab131922e2f4f400750e1330fb52eba1064e915430a5d080ce9b0a87112f8i0', // medium purple
+    3: '/content/362d35ffab24e3dce384dfe0cb31a53246bdf3697fcd12ed164a3e42f61d6333i0', // heliotrope
+    4: '/content/401dbb0317494c35a496203a03d9c6f65d0b90fe7e697baa67456494af3365d9i0', // my sin
+    5: '/content/2c518bb81d24a1501898c4474f9fe4824faf12c7f88f1c952a83cc03d57f6129i0', // gray chateau
+    6: '/content/be02bb59c94533366d15a4dab7af5863251657416c8cc3e7f7d65796ae373ca9i0', // royal blue
+    7: '/content/0438c74ee2ed219926a3fc03fd301035e00997de3febdfe2fa97aaf92271c495i0', // sandstone
+    8: '/content/1a2ced0ca6fa3e6abf2f93f90126954b3d39b808ae34f6204159470bbd5c5236i0', // pastel green
+    9: '/content/f3e8bd895a9c26bb76a1585e599f3daf5aa35e032d97126d3d1e422aa99e9e0ai0', // tango
+    0: '/content/df018b6843931d8913edd25cbc037ecfcaf1cabfef8557da7c7eda6a6114909fi0', // shitcorn
+  }
+
+  // Define the left husk map with the given inscriptions
+  const leftHuskMap = {
+    1: '/content/a1d73521ab9531e0e1fe21de4826ba2bd10c0d2a533f029e26e65a09489e0798i0', // aluminum
+    2: '/content/d0f8d92757af6e2b949a40d7c1074e5c76f54426623b5626fc7c9238f9fa1ff4i0', // electric violet
+    3: '/content/517aee0fd57b23358390e9ada96a4bdf17908ba8583f5095c2ded34b6efc797di0', // heliotrope
+    4: '/content/b82651f4466eb9524d3876963d003ed58125698790e8469a68c799638477b067i0', // golden fizz
+    5: '/content/897b01a94ec248013cdfb737e43675b30e374dccc27af93a1402a5ef04433e59i0', // royal blue
+    6: '/content/c50c9eba253dae17ef8bcc53f4ce586eb358165e7fdebcb58285b8c130e464dci0', // leather
+    7: '/content/16cf14e618f147e4254b481676621f7adff5bab649103e26d016fe815e1c225ci0', // mountain meadow
+    8: '/content/98695afdaba21f5b3ec2aed2552fb04256a3bac1f464f80b15d598d1029b5141i0', // fruit salad
+    9: '/content/5b4f8c4c52626d4f5349ade9b9719b739cd3470d82236ec629adb8324c0a42fai0', // hot pink
+    0: '/content/0efbf53fa260a3462aeffa46014e570aab1ffec3ec2d38cd7853261271495972i0', // outrageous orange
+  }
+
+  // Define the right husk map with the given inscriptions
+  const rightHuskMap = {
+    1: '/content/00a4c0bda04bba5bb8972da005d1d8b93d05c34ded3cd9e7885d5ad8016b3bfei0', // crail
+    2: '/content/98b7923da58f72fc15e886ef77d3c3077ce3414d77120f0199c2182b5e472897i0', // scarpa flow
+    3: '/content/2ae61c6c0ecdc67c4bf5897baa426bcc3435b50f02f2363208a47190064ded3ci0', // meteorite
+    4: '/content/2f211e0a6ad92670d789200f1ed6eb36d8c57aa71fff0530016a8768157062dbi0', // heliotrope
+    5: '/content/e51f7d43a82bbac17bd98547f9205bb3f4b84bedc95d4391d534605d336856ddi0', // buttercup
+    6: '/content/4d9ef4caa3775e8a54f80dd299f2f0d918b9955766876bbb7cad2f27d5f03554i0', // minsk
+    7: '/content/669212fdb250358b138ef0dadac57485b0490f6402ed6081c6133021e7d78b59i0', // nutmeg
+    8: '/content/a0e4a507b6115ee387c0d4e2d89fd06aed1f6fd143e86aa05fa02bcb9631f060i0', // jewel
+    9: '/content/54230b86b6e8b5f7537d33b7f11e864100e46e0841bf4b143fa90da857486f5fi0', // william
+    0: '/content/46c52fa234fa7a7ba3781543fa0538a63235ea3797fc2f3925433068d3ec292ci0', // brilliant rose
+  }
+
+// Define the eyes map with the given inscriptions
+ const eyesMap = {
+    1: '/content/fbdcb8125499e21bd693cd18ee687cdc9ff3b29137d9f68058056fdb7347e6dfi0', // look crossed
+    2: '/content/4e5fdc3d79a80ea8de8204e080833a39dc491b4cd43f0e9d17e54c69ddef34c3i0', // look left
+    3: '/content/4e5fdc3d79a80ea8de8204e080833a39dc491b4cd43f0e9d17e54c69ddef34c3i0', // look left
+    4: '/content/4e5fdc3d79a80ea8de8204e080833a39dc491b4cd43f0e9d17e54c69ddef34c3i0', // look left
+    5: '/content/4e5fdc3d79a80ea8de8204e080833a39dc491b4cd43f0e9d17e54c69ddef34c3i0', // look left
+    6: '/content/4e5fdc3d79a80ea8de8204e080833a39dc491b4cd43f0e9d17e54c69ddef34c3i0', // look left
+    7: '/content/4e5fdc3d79a80ea8de8204e080833a39dc491b4cd43f0e9d17e54c69ddef34c3i0', // look left
+    8: '/content/4e5fdc3d79a80ea8de8204e080833a39dc491b4cd43f0e9d17e54c69ddef34c3i0', // look left
+    9: '/content/4e5fdc3d79a80ea8de8204e080833a39dc491b4cd43f0e9d17e54c69ddef34c3i0', // look left
+    0: '/content/3d0fd8c82163241410b18e0e253280d43a5b2e166b5fbba593645f56ff1ecc8ci0', // look right
+  }
+
+  // Define the head map with the given inscriptions
+  const headMap = {
+    1: '/content/5e26435b4581b2273672daa7d0f6439497a161ccb8a00427e5ebcb14d7deab80i0', // crown
+    2: null, // none
+    3: null, // none
+    4: null, // none
+    5: '/content/3180b5e013fcef2f5a8350d7a6bb07224cb146ae6648342a0a7ee8e29b472db5i0', // halo
+    6: null, // none
+    7: null, // none
+    8: null, // none
+    9: '/content/1c93f31bcb80742bf3e1feb0ec3ac432ee87c4d646af6bac713ecded26774624i0', // firehawk
+    0: '/content/2cd59f1d4771a0ec1c3bca014e01985d09799ac9fe38e7c572ece6dcf6aeca95i0', // headband
+  }
+
+  // Resize window
+  //window.addEventListener('resize', resize, true)
+  //resize()
+
+  // Retrieve content inscription id
+  let mintText = document.getElementById('preview').getAttribute('mint')
+
+  // Check no mint provided
+  if (mintText.includes('MINT_INSCRIPTION_ID')) {
+    let input = document.getElementById('blk')
+    input.style.display = 'block'
+    input.style.position = 'absolute'
+    input.style.fontSize = '20px'
+    input.style.margin = '20px'
+    input.style.top = '0'
+    input.value = blockNumber
+    input.addEventListener('input', (event) => {
+      blockNumber = input.value
+      update()
+    })
+    update()
+  }
+  // Mint was provided
+  else {
+    const request = new XMLHttpRequest()
+    try {
+      request.open('GET', '/content/' + mintText)
+      request.responseType = 'text'
+      request.addEventListener('load', () => initialize(request.response))
+      request.addEventListener('error', () => console.error('XHR error'))
+      request.send()
+    } catch (error) {
+      console.error(`XHR error ${request.status}`)
+    }
+  }
+
+  function initialize(result) {
+    if (result) {
+      console.log('Result', result)
+      data = JSON.parse(result)
+      blockNumber = data.blk
+    }
+    update()
+  }
+
+  function update() {
+    generateHtmlBasedOnBlockNumber(blockNumber)
+    resizeImages()
+  }
+
+  function generateSvgForDigits(blockNumber) {
+    const originalString = blockNumber.toString();
+    const digits = originalString.padStart(7, '0').split('').map(Number).reverse();
+    let layers = [];
+
+    // corn
+    if (originalString.length >= 1) {
+      const cornForFirstDigitUrl = cornMap[digits[0]]; // Get the URL from cornMap
+      const cornForFirstDigitImg = `<img class="layer" src="${cornForFirstDigitUrl}">`; // Create the <img> tag
+      layers.push(cornForFirstDigitImg); // Push the <img> tag into the layers array
+    }
+
+    // left husk
+    if (originalString.length >= 2) {
+      const leftHuskForSecondDigitUrl = leftHuskMap[digits[1]]; // Get the URL from leftHuskMap
+      const leftHuskForSecondDigitImg = `<img class="layer" src="${leftHuskForSecondDigitUrl}">`; // Create the <img> tag
+      layers.push(leftHuskForSecondDigitImg); // Push the <img> tag into the layers array
+    }
+
+    // right husk
+    if (originalString.length >= 3) {
+      const rightHuskForThirdDigitUrl = rightHuskMap[digits[2]]; // Get the URL from rightHuskMap
+      const rightHuskForThirdDigitImg = `<img class="layer" src="${rightHuskForThirdDigitUrl}">`; // Create the <img> tag
+      layers.push(rightHuskForThirdDigitImg); // Push the <img> tag into the layers array
+    }
+
+// eyes
+if (originalString.length >= 4) {
+    const eyesForFourthDigitUrl = eyesMap[digits[3]]; // Get the URL from eyesMap
+    const eyesForFourthDigitImg = `<img class="layer" src="${eyesForFourthDigitUrl}">`; // Create the <img> tag
+    layers.push(eyesForFourthDigitImg); // Push the <img> tag into the layers array
+
+    // Check for fourth digit between 2 and 9 and "00" in the string
+    if (['2', '3', '4', '5', '6', '7', '8', '9'].includes(digits[3].toString()) && originalString.includes('00')) {
+        const laserLeft = `<img class="layer" src="/content/a635a5e4d591aeddddf23b60357d941775cbf939066b8efbeb24d95843f45689i0" />`; 
+        layers.push(laserLeft); 
+    }
+
+    // Check for fourth digit being 0 and "00" in the string
+    if (digits[3] === 0 && originalString.includes('00')) {
+        const laserRight = `<img class="layer" src="/content/ad8f673369c107bdc1499041a2070b2f92b723f982edd5744c0c7781de0e5e87i0" />`; 
+        layers.push(laserRight); 
+    }
+
+  // Check for fourth digit between 2 and 9 and "11" in the string
+        if (['2', '3', '4', '5', '6', '7', '8', '9'].includes(digits[3].toString()) && originalString.includes('11')) {
+        const nightvisionLeft = `<img class="layer" src="/content/539971770904faf1e01d9652b86e5970ed24827323840afa0c0523c276f256c5i0" />`; 
+        layers.push(nightvisionLeft); 
+    }
+
+    // Check for fourth digit being 0 and "11" in the string
+    if (digits[3] === 0 && originalString.includes('11')) {
+        const nightvisionRight = `<img class="layer" src="/content/8fb40cb2de25d9f2c1db545d9af04a484e4f69fdd932c2bc4fbad6f1f843e27ci0" />`; 
+        layers.push(nightvisionRight); 
+    }
+    
+    // Check for fourth digit being 0 and "11" in the string
+    if (digits[3] === 1 && originalString.includes('11')) {
+        const nightvisionCrossed = `<img class="layer" src="/content/5b0d66c990841e95e3f8c742db9a8ec95813a5d7fb2f9915a870a5e5280b8bd6i0" />`; 
+        layers.push(nightvisionCrossed); 
+    }
+  }
+
+    // head
+    if (originalString.length >= 5) {
+      const headForFifthDigitUrl = headMap[digits[4]]; // Get the URL from headMap
+      const headForFifthDigitImg = `<img class="layer" src="${headForFifthDigitUrl}">`; // Create the <img> tag
+      layers.push(headForFifthDigitImg); // Push the <img> tag into the layers array
+    }
+
+    return layers.join('')
+  }
+
+  function c420(number) {
+    const numberStr = number.toString()
+    return numberStr.includes('420')
+  }
+
+  function displayc420(number) {
+    return `
+        <img class="layer" src="/content/2f3e76977b248d60e156d0f648da1e6cd4f56c3996d3cffa412d5b115f96180fi0" />
+    `
+  }
+  function c404(number) {
+    const numberStr = number.toString()
+    return numberStr.includes('404')
+  }
+
+  function displayc404(number) {
+    return `
+        <img class="layer" src="/content/39a6c7d5595a88f74d9595ef07a28952ccf4ba10a456c10ac56c2ef21cc5abf1i0" />
+    `
+  }
+
+  function c777(number) {
+    const numberStr = number.toString()
+    return numberStr.includes('777')
+  }
+
+  function displayc777(number) {
+    return `
+        <img class="layer" src="/content/cb379852ba6ee6538b8910479735970ad51a03698c2d3e2bb4cb170f82eed672i0" />
+    `
+  }
+
+  function c666(number) {
+    const numberStr = number.toString()
+    return numberStr.includes('666')
+  }
+
+  function displayc666(number) {
+    return `
+        <img class="layer" src="/content/f2c334bb422c54b064ed4207c3680905edb2cfa676c2150f665d7ab5ea0105d0i0" />
+    `
+  }
+
+  function c69(number) {
+    const numberStr = number.toString()
+    return numberStr.includes('69')
+  }
+
+  function displayc69(number) {
+    return `
+        <img class="layer" src="/content/edf34b0e5db2e3fd40f34da22a03e91bcc19572c8fe23211b83adea1e00870a1i0" />
+    `
+  }
+
+  function c6(number) {
+    const numberStr = number.toString()
+    return numberStr.includes('6')
+  }
+
+  function displayc6(number) {
+    return `
+        <img class="layer" src="/content/f3841a50531f6232e0aa582d1842470312c05b2cab73424a77267d1ce0bc6003i0" />
+    `
+  }
+
+  function c8(number) {
+    const numberStr = number.toString()
+    return numberStr.includes('8')
+  }
+
+  function displayc8(number) {
+    return `
+        <img class="layer" src="/content/7f8f0c6a3ce79294399714f6c8189935d6d065b0c46b141e1474c985cdd8ebbei0" />
+    `
+  }
+
+  function c66(number) {
+    const numberStr = number.toString()
+    return numberStr.includes('66')
+  }
+
+  function displayc66(number) {
+    return `
+        <img class="layer" src="/content/97116a169d395ee7c45532b77eb06c69df6f78c6710ccd485ab8afc5c9cd125bi0" />
+    `
+  }
+
+  function c88(number) {
+    const numberStr = number.toString()
+    return numberStr.includes('88')
+  }
+
+  function displayc88(number) {
+    return `
+        <img class="layer" src="/content/cbff9037f8126f7163293e30dfbfe2ad400531a3fbfab2c3688cf20c4eba6660i0" />
+    `
+  }
+
+  function cTripleDigit(number) {
+    const numberStr = number.toString();
+    return numberStr.includes('111') ||
+          numberStr.includes('222') ||
+          numberStr.includes('333') ||
+          numberStr.includes('444') ||
+          numberStr.includes('555') ||
+          numberStr.includes('888') ||
+          numberStr.includes('999');
+}
+
+
+  function displaycTripleDigit(number) {
+    return `
+        <img class="layer" src="/content/4a3e4fa85a1392e7ab6eebcc785cc75a4f6b13ea64b9bcb355897e139a2ce956i0" />
+    `
+  }
+
+
+  function c50k(number) {
+    return number < 50000;
+}
+
+  function displayc50k(number) {
+    return `
+        <img class="layer" src="/content/3d4dea5a43944098e8e0d65b61255a7f902c243b19a63f3bc47552483fdd8968i0" />
+    `
+  }
+
+  function c150k(number) {
+    return number >= 50000 && number < 150000;
+}
+
+
+  function displayc150k(number) {
+    return `
+        <img class="layer" src="/content/e78cc46657c92a0450423ec0280a05b7c450c4a0d33a1a6b38a14543e5d955edi0" />
+    `
+  }
+
+  function c500k(number) {
+    return number >= 150000 && number < 500000;
+}
+
+
+  function displayc500k(number) {
+    return `
+        <img class="layer" src="/content/947dabe1280316daca4830cc8404af111314ea84dddf5ed1faa7c99fb73073f0i0" />
+    `
+  }
+
+  function cOver500k(number) {
+    return number >= 500000;
+}
+
+
+  function displaycOver500k(number) {
+    return `
+        <img class="layer" src="/content/01557336ac5d614f9afd5e2fe0af6188366211567f66729cb5f60e06f207ae67i0" />
+    `
+  }
+
+  // Function to resize the images within the container
+  function resizeImages() {
+    var container = document.getElementById('natcornviewer');
+    var containerWidth = container.offsetWidth;
+    var containerHeight = container.offsetHeight;
+
+    // Loop through each image and resize it based on container size
+    var images = container.querySelectorAll('.layer');
+    images.forEach(function (image) {
+      var imageAspectRatio = image.width / image.height;
+      var containerAspectRatio = containerWidth / containerHeight;
+
+      if (imageAspectRatio > containerAspectRatio) {
+        // Image is wider than container
+        image.style.width = '100%';
+        image.style.height = 'auto';
+      } else {
+        // Image is taller than container
+        image.style.height = '100%';
+        image.style.width = 'auto';
+      }
+    });
+    console.log('resized');
+  }
+
+  // Call the resize function on page load and window resize
+  window.onload = resizeImages;
+  window.onresize = resizeImages;
+
+  //fixed elements
+  function generateHtmlBasedOnBlockNumber(blockNumber) {
+    const layersForDigits = generateSvgForDigits(blockNumber)
+    const joint = c420(blockNumber) ? displayc420() : ""
+    const error404 = c404(blockNumber) ? displayc404() : ""
+    const horns = c666(blockNumber) ? displayc666() : ""
+    const luck = c777(blockNumber) ? displayc777() : ""
+    const shutter = c69(blockNumber) ? displayc69() : ""
+    const gold = cTripleDigit(blockNumber) ? displaycTripleDigit() : ""
+    const blackoutMouth = c50k(blockNumber) ? displayc50k() : ""
+    const triangleMouth = c150k(blockNumber) ? displayc150k() : ""
+    const squareMouth = c500k(blockNumber) ? displayc500k() : ""
+    const natcatMouth = cOver500k(blockNumber) ? displaycOver500k() : ""
+    const popcornLeft = c6(blockNumber) ? displayc6() : ""
+    const shitcornRight = c8(blockNumber) ? displayc8() : ""
+    const popcornBoth = c66(blockNumber) ? displayc66() : ""
+    const shitcornBoth = c88(blockNumber) ? displayc88() : ""
+
+    //background
+    const background = `<img class="layer" src="/content/815ef92922ed4ec9c1a5a880cd064980db45ab4f6ee77a482e19ed8e6d637986i0" />`
+
+    // construction
+    const htmlContent = background + layersForDigits + blackoutMouth + triangleMouth + squareMouth + natcatMouth + joint + error404 + horns + luck + shutter + gold + popcornLeft + shitcornRight + popcornBoth + shitcornBoth;
+    document.getElementById('natcornviewer').innerHTML = htmlContent;
+  }
+</script>
+<style>
+  .layer {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    image-rendering: pixelated;
+  }
+  </style>
